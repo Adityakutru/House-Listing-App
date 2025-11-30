@@ -1,28 +1,30 @@
 import House from '../models/house.model.js'
 
 
-export const addHouse = async(req, res)=>{
-    try{const{title, description, price, location, ownerName, ownerPhone, images} = req.body;
+export const addHouse = async (req, res) => {
+  try {
+    // req.files comes from multer
+    const imageUrls = req.files.map((file) => file.path);
 
     const newHouse = new House({
-        title,
-        description,
-        price,
-        location,
-        ownerName,
-        ownerPhone,
-        images,
+      ...req.body,
+      images: imageUrls,
     });
+
     await newHouse.save();
 
-    res.status(201).json({message:"House added successfully!", house: newHouse});
-    }catch(error){
-        res.status(500).json({
-            message:"Error adding house",
-            error:error.message,
-        })
-    }
+    res.status(201).json({
+      message: "House added successfully!",
+      house: newHouse
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error adding house",
+      error: error.message,
+    });
+  }
 };
+
 
 
 
