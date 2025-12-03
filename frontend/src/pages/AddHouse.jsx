@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function AddHouse() {
   const navigate = useNavigate();
@@ -45,10 +46,12 @@ export default function AddHouse() {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      toast.success("House added successfully!");
       navigate("/");
     } catch (err) {
       console.log(err);
+      toast.error(err.response?.data?.message || "Error adding house");
+
     }
   };
 
