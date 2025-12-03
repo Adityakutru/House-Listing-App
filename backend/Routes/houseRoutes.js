@@ -1,5 +1,5 @@
 import express from "express";
-import { addHouse, getHouses, getHouseById } from "../controllers/houseController.js";
+import { addHouse, getHouses, getHouseById, getMyHouses } from "../controllers/houseController.js";
 import upload from "../config/multer.js";
 import authMiddleware from "../middleware/auth.js";   // ✅ IMPORT HERE
 
@@ -14,8 +14,7 @@ router.post(
   (req, res, next) => { console.log("3️⃣ Multer passed"); next(); },
   addHouse
 );
-
-
+router.get("/owner/my", authMiddleware, getMyHouses);
 router.get("/", getHouses);
 router.get("/:id", getHouseById);
 

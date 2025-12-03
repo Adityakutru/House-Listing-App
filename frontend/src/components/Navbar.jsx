@@ -27,6 +27,16 @@ export default function Navbar() {
           <Link to="/" className="hover:text-blue-600">
             Home
           </Link>
+          
+          <Link
+          to="/ads"
+          className={`text-gray-700 hover:text-blue-600 ${
+            location.pathname === "/ads" ? "font-semibold" : ""
+          }`}
+        >
+          Ads
+        </Link>
+
 
           {token && (
             <>

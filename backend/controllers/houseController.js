@@ -72,3 +72,15 @@ export const getHouseById = async(req, res)=>{
         });
     }
 }
+
+export const getMyHouses = async (req, res) => {
+  try {
+    const houses = await House.find({ owner: req.user.id });
+    res.json(houses);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching your listings",
+      error: error.message,
+    });
+  }
+};

@@ -94,15 +94,21 @@ const Ads = () => {
 
       {/* RIGHT LIST VIEW */}
       <div className="flex-1">
-        <h2 className="text-2xl font-bold mb-4">
-          {filtered.length} Properties Found
-        </h2>
+      
+          {filtered.length > 0? (<h2 className="text-2xl font-bold mb-4">{filtered.length} Properties </h2> ):( <h2 className="text-2xl font-bold mb-4">{filtered.length} Properties Found</h2>)}
+       
 
-        <div className="flex flex-col gap-6">
-          {filtered.map((house) => (
-            <HouseCard key={house._id} house={house} />
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <p className="text-gray-600 text-lg mt-10 text-center">
+            ❌ There are no ads that match your search.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {filtered.map((house) => (
+              <HouseCard key={house._id} house={house} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
