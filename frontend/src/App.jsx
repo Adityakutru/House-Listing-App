@@ -39,7 +39,7 @@ const App = () => {
 
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
-          <Route path="/add-house" element={<AddHouse />} /> 
+          <Route path="/add-house" element={<AddHouse />} />
           <Route path="/my-listings" element={<MyListings />} /> 
           <Route path="/owner-dashboard" element={<OwnerDashboard />} /> 
         </Route>
