@@ -7,13 +7,16 @@ const auth = (req, res, next) => {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  const token = authHeader.split(" ")[1]; // Bearer TOKEN
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // FIX: your token payload contains {id: ...}
-    req.user = { id: decoded.id }; 
+    req.user = { id: decoded.id };  // ✅ FIXED
 
     next();
   } catch (err) {

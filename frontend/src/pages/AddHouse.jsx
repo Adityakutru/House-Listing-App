@@ -41,11 +41,7 @@ export default function AddHouse() {
     }
 
     try {
-      await api.post("/houses", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await api.post("/houses", data);
       toast.success("House added successfully!");
       navigate("/");
     } catch (err) {
