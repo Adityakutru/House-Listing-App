@@ -14,6 +14,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import PrivateRoute from "./components/PrivateRoute";
+import Ads from './pages/Adds';
 
 const App = () => {
   return (
@@ -40,7 +41,8 @@ const App = () => {
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
           <Route path="/add-house" element={<AddHouse />} />
-          <Route path="/my-listings" element={<MyListings />} /> 
+          <Route path="/my-listings" element={<MyListings />} />
+          <Route path="/ads" element={<Ads />} /> 
           <Route path="/owner-dashboard" element={<OwnerDashboard />} /> 
         </Route>
       </Routes>

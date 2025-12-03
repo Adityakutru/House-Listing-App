@@ -2,6 +2,10 @@ import House from '../models/house.model.js'
 
 
 export const addHouse = async (req, res) => {
+  console.log("🔥 req.user =", JSON.stringify(req.user, null, 2));
+console.log("🔥 req.body =", JSON.stringify(req.body, null, 2));
+console.log("🔥 req.files =", JSON.stringify(req.files, null, 2));
+
   try {
     const imageUrls = req.files.map((file) => file.path);
 

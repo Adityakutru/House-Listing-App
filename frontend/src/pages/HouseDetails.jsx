@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from "../api/axios";
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ const HouseDetails = () => {
   const [house, setHouse] = useState([]);
 
   useEffect(()=>{
-    axios.get(`http://localhost:3000/api/houses/${id}`).then((res) => setHouse(res.data)).catch((err)=> console.log(err))
+    api.get(`/houses/${id}`).then((res) => setHouse(res.data)).catch((err)=> console.log(err))
   },[id]);
 
   if(!house) return <p className='text-center mt-10'>Loading...</p>

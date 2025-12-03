@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -41,7 +41,7 @@ export default function AddHouse() {
     }
 
     try {
-      await axios.post("http://localhost:3000/api/houses", data, {
+      await api.post("/houses", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
