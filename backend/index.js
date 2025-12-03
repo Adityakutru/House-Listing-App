@@ -16,6 +16,12 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/houses",houseRoutes);
 
+app.use((err, req, res, next) => {
+  console.log("🔥 MULTER ERROR:", err);
+  res.status(500).json({ message: "Upload failed", error: err.message });
+});
+
+
 
 connectDB();
 

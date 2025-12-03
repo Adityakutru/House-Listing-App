@@ -3,11 +3,14 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "./cloudinary.js";
 
 const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "HouseListing", // cloud folder name
-    allowed_formats: ["jpg", "png", "jpeg"],
-  },
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "HouseListing",
+      resource_type: "image",
+      public_id: file.originalname.split(".")[0],
+    };
+  }
 });
 
 const upload = multer({ storage });
