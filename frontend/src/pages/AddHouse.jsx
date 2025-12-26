@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import LocationPicker from "../components/LocationPicker";
 
 export default function AddHouse() {
   const navigate = useNavigate();
@@ -15,7 +16,8 @@ export default function AddHouse() {
     ownerPhone: "",
   });
 
-  const [files, setFiles] = useState([]); // <-- FIXED
+  const [files, setFiles] = useState([]);
+  const [mapLocation, setMapLocation] = useState({ lat: null, lng: null });
 
   const handleChange = (e) => {
     setFormData({
@@ -27,32 +29,40 @@ export default function AddHouse() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // CREATE FORMDATA
+    // 🔴 Ensure location is pinned
+    if (!mapLocation.lat || !mapLocation.lng) {
+      toast.error("Please pin the house location on the map");
+      return;
+    }
+
     const data = new FormData();
 
-    // append all normal text fields
+    // append text fields
     Object.keys(formData).forEach((key) => {
       data.append(key, formData[key]);
     });
 
-    // append image files
+    // append map coordinates
+    data.append("latitude", mapLocation.lat);
+    data.append("longitude", mapLocation.lng);
+
+    // append images
     for (let i = 0; i < files.length; i++) {
       data.append("images", files[i]);
     }
 
     try {
       await api.post("/houses", data, {
-  headers: {
-    "Content-Type": "multipart/form-data"
-  }
-});
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       toast.success("House added successfully!");
-      navigate("/");
+      navigate("/ads");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error(err.response?.data?.message || "Error adding house");
-
     }
   };
 
@@ -63,68 +73,58 @@ export default function AddHouse() {
       <form onSubmit={handleSubmit} className="space-y-4">
 
         {/* TITLE */}
-        <div>
-          <label className="block font-medium mb-1">Title</label>
-          <input
-            name="title"
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
+        <input
+          name="title"
+          placeholder="Title"
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+          required
+        />
 
         {/* DESCRIPTION */}
-        <div>
-          <label className="block font-medium mb-1">Description</label>
-          <textarea
-            name="description"
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            rows="3"
-          ></textarea>
-        </div>
+        <textarea
+          name="description"
+          placeholder="Description"
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+          rows="3"
+        ></textarea>
 
         {/* PRICE */}
-        <div>
-          <label className="block font-medium mb-1">Price</label>
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+          required
+        />
+
+        {/* LOCATION TEXT */}
+        <input
+          name="location"
+          placeholder="Area / City"
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+          required
+        />
+
+        {/* OWNER DETAILS */}
+        <div className="grid grid-cols-2 gap-4">
           <input
-            type="number"
-            name="price"
+            name="ownerName"
+            placeholder="Owner Name"
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
             required
           />
-        </div>
-
-        {/* LOCATION */}
-        <div>
-          <label className="block font-medium mb-1">Location</label>
           <input
-            name="location"
+            name="ownerPhone"
+            placeholder="Owner Phone"
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
+            required
           />
-        </div>
-
-        {/* OWNER */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block font-medium mb-1">Owner Name</label>
-            <input
-              name="ownerName"
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Owner Phone</label>
-            <input
-              name="ownerPhone"
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
-            />
-          </div>
         </div>
 
         {/* IMAGE UPLOAD */}
@@ -138,9 +138,22 @@ export default function AddHouse() {
           />
         </div>
 
+        {/* MAP PICKER */}
+        <div>
+          <p className="font-medium mb-2">Pin Exact Location on Map</p>
+          <LocationPicker setLocation={setMapLocation} />
+
+          {mapLocation.lat && (
+            <p className="text-sm text-gray-600 mt-2">
+              📍 Selected: {mapLocation.lat.toFixed(4)},{" "}
+              {mapLocation.lng.toFixed(4)}
+            </p>
+          )}
+        </div>
+
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
         >
           Add House
         </button>

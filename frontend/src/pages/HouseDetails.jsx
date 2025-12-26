@@ -1,34 +1,43 @@
-import api from "../api/axios";
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from "react-router-dom";
+import { formatPrice } from "../utils/formatPrice";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import HouseImageCarousel from "../components/HouseImageCarousel";
 
 const HouseDetails = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [house, setHouse] = useState(null);
 
-  // It is imported from the DOM
-  const{id} = useParams();
-  const [house, setHouse] = useState([]);
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3000/api/houses/${id}`)
+      .then((res) => setHouse(res.data))
+      .catch((err) => console.log(err));
+  }, [id]);
 
-  useEffect(()=>{
-    api.get(`/houses/${id}`).then((res) => setHouse(res.data)).catch((err)=> console.log(err))
-  },[id]);
-
-  if(!house) return <p className='text-center mt-10'>Loading...</p>
+  if (!house) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className='max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg'>
-      <h1 className='text-3xl font-bold mb-2'>{house.title}</h1>
-      <p className='text-gray-600 mb-4'>{house.location}</p>
+    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
 
-      <div className="w-full h-80 mb-6">
-        <img
-          src={house.images?.[0] || "https://via.placeholder.com/500"}
-          className="w-full h-full object-cover rounded"
-          alt="House"
-        />
+      {/* BACK BUTTON */}
+      <button
+        onClick={() => navigate("/ads")}
+        className="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center gap-2 transition"
+      >
+        ← Back
+      </button>
+
+      <h1 className="text-3xl font-bold mb-2">{house.title}</h1>
+      <p className="text-gray-600 mb-4">{house.location}</p>
+
+      <div className="mb-6">
+      <HouseImageCarousel images={house.images} />
       </div>
 
       <p className="text-xl text-green-600 font-bold mb-4">
-        ₹ {house.price}
+        ₹ {formatPrice(house.price)}
       </p>
 
       <p className="text-gray-700 mb-4">{house.description}</p>
@@ -38,7 +47,7 @@ const HouseDetails = () => {
         <p className="text-gray-700">Phone: {house.ownerPhone}</p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default HouseDetails
+export default HouseDetails;

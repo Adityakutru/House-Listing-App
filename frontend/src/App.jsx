@@ -8,7 +8,6 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import MyListings from "./pages/MyListings";
 import OwnerDashboard from "./pages/OwnerDashboard";
-
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
