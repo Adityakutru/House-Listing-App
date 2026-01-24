@@ -2,10 +2,30 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import HouseCard from "../components/HouseCard";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 
 const MyListings = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this listing?")) return;
+
+  try {
+    await api.delete(`/houses/${id}`);
+    setHouses((prev) => prev.filter((h) => h._id !== id));
+    toast.success("Listing deleted");
+  } catch (err) {
+    toast.error("Delete failed", err);
+  }
+};
+
+  const handleEdit = (id) => {
+  navigate(`/edit-house/${id}`);
+};
 
   useEffect(() => {
     api.get("/houses/owner/my")
@@ -41,7 +61,14 @@ const MyListings = () => {
   return (
     <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {houses.map((h) => (
-        <HouseCard key={h._id} house={h} />
+        <HouseCard
+  key={h._id}
+  house={h}
+  showActions
+  onDelete={handleDelete}
+  onEdit={handleEdit}
+/>
+
       ))}
     </div>
   );

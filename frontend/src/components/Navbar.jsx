@@ -5,32 +5,34 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
   const user = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
     : null;
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
 
   return (
     <>
       <nav className="bg-white shadow-sm py-4 px-6 mb-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
 
+          {/* LOGO */}
           <Link to="/" className="text-2xl font-bold text-blue-600">
             HouseFinder
           </Link>
 
+          {/* RIGHT SECTION */}
           <div className="flex items-center gap-6">
 
-            {/* Home */}
             <Link to="/" className="hover:text-blue-600">
               Home
             </Link>
 
-            {/* Ads */}
             <Link
               to="/ads"
-              className={`text-gray-700 hover:text-blue-600 ${
+              className={`hover:text-blue-600 ${
                 location.pathname === "/ads" ? "font-semibold" : ""
               }`}
             >
@@ -46,16 +48,59 @@ export default function Navbar() {
                   Add Listing
                 </Link>
 
-                <Link to="/my-listings">My Listings</Link>
+                {/* PROFILE DROPDOWN */}
+                <div className="relative">
+                  <button
+                    onClick={() => setOpenProfile(!openProfile)}
+                    className="flex items-center gap-2"
+                  >
+                    <img
+                      src={
+                        user?.profilePic ||
+                        `https://ui-avatars.com/api/?name=${user?.name}&background=2563eb&color=fff`
+                      }
+                      alt="profile"
+                      className="w-9 h-9 rounded-full object-cover"
+                    />
+                    <span className="font-medium">{user?.name}</span>
+                  </button>
 
-                <Link to="/owner-dashboard">Dashboard</Link>
+                  {openProfile && (
+                    <div className="absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg z-50">
+                      <button
+                        onClick={() => {
+                          setOpenProfile(false);
+                          navigate("/my-listings");
+                        }}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        My Listings
+                      </button>
 
-                <button
-                  onClick={() => setShowLogoutModal(true)}
-                  className="text-red-600 font-semibold cursor-pointer"
-                >
-                  Logout
-                </button>
+                      <button
+                        onClick={() => {
+                          setOpenProfile(false);
+                          navigate("/chat");
+                        }}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Chat
+                      </button>
+
+                      <hr />
+
+                      <button
+                        onClick={() => {
+                          setOpenProfile(false);
+                          setShowLogoutModal(true);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             )}
 
@@ -74,7 +119,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* LOGOUT CONFIRM MODAL */}
+      {/* LOGOUT CONFIRM MODAL (UNCHANGED) */}
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">

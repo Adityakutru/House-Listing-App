@@ -9,7 +9,14 @@ const houseSchema = new mongoose.Schema(
     ownerName: { type: String, required: true },
     ownerPhone: { type: String, required: true },
     images: [{ type: String }],
-
+    latitude: {
+      type: Number,
+      required: true,
+    },
+    longitude: {
+      type: Number,
+      required: true,
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

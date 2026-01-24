@@ -1,30 +1,81 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useState } from "react";
+import L from "leaflet";
 
-function LocationPicker({ setLocation }) {
-  function LocationMarker() {
-    const [position, setPosition] = useState(null);
+// Fix Leaflet marker icon issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
 
-    useMapEvents({
-      click(e) {
-        setPosition(e.latlng);
-        setLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
-      },
-    });
+function ClickHandler({ setLocation, onAddressFound }) {
+  useMapEvents({
+    async click(e) {
+  const { lat, lng } = e.latlng;
 
-    return position ? <Marker position={position}></Marker> : null;
+  setLocation({ lat, lng });
+
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    );
+    const data = await res.json();
+
+    const address = data.address || {};
+
+    const extractedAddress = {
+      area:
+        address.suburb ||
+        address.neighbourhood ||
+        address.village ||
+        "",
+      city:
+        address.city ||
+        address.town ||
+        address.county ||
+        "",
+      state: address.state || "",
+    };
+
+    if (onAddressFound) {
+      onAddressFound(extractedAddress);
+    }
+  } catch (err) {
+    console.error("Reverse geocoding failed", err);
   }
+}
+,
+  });
 
+  return null;
+}
+
+export default function LocationPicker({ setLocation, location, onAddressFound }) {
   return (
-    <MapContainer center={[20.30, 85.82]} zoom={13} style={{ height: "300px" }}>
+    <MapContainer
+      center={[20.30, 85.82]}
+      zoom={13}
+      style={{ height: "300px", borderRadius: "10px" }}
+      className="shadow"
+    >
       <TileLayer
-        attribution='&copy; OpenStreetMap contributors'
+        attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <LocationMarker />
+
+      <ClickHandler
+        setLocation={setLocation}
+        onAddressFound={onAddressFound}
+      />
+
+      {location?.lat && location?.lng && (
+        <Marker position={[location.lat, location.lng]} />
+      )}
     </MapContainer>
   );
 }
-
-export default LocationPicker;

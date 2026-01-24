@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatPrice } from "../utils/formatPrice";
 
-export default function HouseCard({ house }) {
+export default function HouseCard({ house, showActions = false, onDelete, onEdit })
+ {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
 
@@ -36,6 +37,31 @@ export default function HouseCard({ house }) {
           </p>
 
           {/* Toggle Expand Button */}
+          {showActions && (
+  <div className="flex gap-3 mt-4">
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onEdit(house._id);
+      }}
+      className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+    >
+      Edit
+    </button>
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onDelete(house._id);
+      }}
+      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+    >
+      Delete
+    </button>
+  </div>
+)}
+
+
           <button
             onClick={toggleExpand}
             className="text-black-600 font-medium mt-3 hover:underline"

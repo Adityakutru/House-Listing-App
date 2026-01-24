@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 export default function Ads() {
+
+  const navigate = useNavigate();
+
   const [houses, setHouses] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [expanded, setExpanded] = useState(null);
@@ -77,6 +82,8 @@ export default function Ads() {
     }));
   };
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   return (
     <div className="max-w-6xl mx-auto mt-10 px-4 flex gap-10">
       
@@ -138,9 +145,11 @@ export default function Ads() {
 
           return (
             <div
-              key={house._id}
-              className="bg-white rounded-xl shadow-xl hover:shadow-2xl transition-shadow duration-300 p-4 mb-8"
-            >
+  key={house._id}
+  onClick={() => navigate(`/house/${house._id}`)}
+  className="bg-white rounded-xl shadow-xl hover:shadow-2xl transition-shadow duration-300 p-4 mb-8 cursor-pointer"
+>
+
               <div className="flex gap-6 items-start">
 
                 {/* IMAGE CAROUSEL */}
@@ -222,13 +231,15 @@ export default function Ads() {
                   </p>
 
                   <button
-                    onClick={() => toggleExpand(house._id)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // 👈 THIS IS THE FIX
+                      toggleExpand(house._id);
+                    }}
                     className="text-blue-600 mt-2 hover:underline"
                   >
-                    {expanded === house._id
-                      ? "Hide Details ↑"
-                      : "View Details ↓"}
+                    {expanded === house._id ? "Hide Details ↑" : "View Details ↓"}
                   </button>
+
                 </div>
               </div>
 
@@ -238,15 +249,39 @@ export default function Ads() {
                   expanded === house._id ? "max-h-96 mt-4" : "max-h-0"
                 }`}
               >
-                <div className="bg-gray-50 rounded-lg shadow-inner p-4">
-                  <p className="text-gray-700">{house.description}</p>
-                  <p className="mt-2 text-sm">
-                    <strong>Owner:</strong> {house.ownerName}
-                  </p>
-                  <p className="text-sm">
-                    <strong>Phone:</strong> {house.ownerPhone}
-                  </p>
-                </div>
+                <div className="bg-gray-50 rounded-lg shadow-inner p-4 space-y-3">
+  <p className="text-gray-700">{house.description}</p>
+
+  <p className="text-sm">
+    <strong>Owner:</strong> {house.ownerName}
+  </p>
+
+  <p className="text-sm">
+    <strong>Phone:</strong> {house.ownerPhone}
+  </p>
+
+  {/* CHAT WITH OWNER */}
+
+  {user?.id !== house.owner &&
+  (<button
+    onClick={async () => {
+      try {
+        const res = await api.post("/chat/start", {
+          houseId: house._id,
+        });
+        navigate(`/chat/${res.data._id}`);
+      } catch (err) {
+        alert("Please login to chat with owner");
+      }
+    }}
+    className="mt-3 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+  >
+    Chat with Owner
+  </button>
+        )}
+</div>
+
+
               </div>
             </div>
           );

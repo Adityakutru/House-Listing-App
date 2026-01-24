@@ -2,19 +2,38 @@ import House from '../models/house.model.js'
 
 
 export const addHouse = async (req, res) => {
-  // safer logging (stringify)
-  console.log("🔥 req.user =", JSON.stringify(req.user, null, 2));
-  console.log("🔥 req.body =", JSON.stringify(req.body, null, 2));
-  console.log("🔥 req.files =", JSON.stringify(req.files, null, 2));
-
   try {
     const imageUrls = (req.files || []).map((file) => file.path);
 
-    // Validate required fields before saving
-    const { title, description, price, location, ownerName, ownerPhone } = req.body;
-    if (!title || !description || !price || !location || !ownerName || !ownerPhone) {
+    const {
+      title,
+      description,
+      price,
+      area,
+      city,
+      state,
+      ownerName,
+      ownerPhone,
+      latitude,
+      longitude,
+    } = req.body;
+
+    if (
+      !title ||
+      !description ||
+      !price ||
+      !area ||
+      !city ||
+      !state ||
+      !ownerName ||
+      !ownerPhone ||
+      !latitude ||
+      !longitude
+    ) {
       return res.status(400).json({ message: "Missing required house fields" });
     }
+
+    const location = `${area}, ${city}, ${state}`;
 
     const newHouse = new House({
       title,
@@ -23,20 +42,26 @@ export const addHouse = async (req, res) => {
       location,
       ownerName,
       ownerPhone,
+      latitude,
+      longitude,
       images: imageUrls,
-      owner: req.user?.id, // safer access
+      owner: req.user.id,
     });
 
     await newHouse.save();
 
-    res.status(201).json({ message: "House added successfully!", house: newHouse });
+    res.status(201).json({
+      message: "House added successfully!",
+      house: newHouse,
+    });
   } catch (error) {
     console.error("🔥 ERROR in addHouse:", error);
-    res.status(500).json({ message: "Error adding house", error: error.message });
+    res.status(500).json({
+      message: "Error adding house",
+      error: error.message,
+    });
   }
 };
-
-
 
 
 
@@ -84,3 +109,46 @@ export const getMyHouses = async (req, res) => {
     });
   }
 };
+
+// DELETE HOUSE (only owner)
+export const deleteHouse = async (req, res) => {
+  try {
+    const house = await House.findById(req.params.id);
+
+    if (!house) {
+      return res.status(404).json({ message: "House not found" });
+    }
+
+    if (house.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await house.deleteOne();
+    res.json({ message: "House deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Delete failed", error: error.message });
+  }
+};
+
+// UPDATE HOUSE (only owner)
+export const updateHouse = async (req, res) => {
+  try {
+    const house = await House.findById(req.params.id);
+
+    if (!house) {
+      return res.status(404).json({ message: "House not found" });
+    }
+
+    if (house.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    Object.assign(house, req.body);
+    await house.save();
+
+    res.json({ message: "House updated successfully", house });
+  } catch (error) {
+    res.status(500).json({ message: "Update failed", error: error.message });
+  }
+};
+

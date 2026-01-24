@@ -4,6 +4,9 @@ import { connectDB } from './config/db.js'
 import dotenv from 'dotenv';
 import cors from 'cors'
 import authRoutes from "./Routes/authRoutes.js"
+import chatRoutes from "./Routes/chatRoutes.js";
+import http from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
 const app = express();
@@ -16,6 +19,9 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/houses",houseRoutes);
 
+app.use("/api/chat", chatRoutes);
+
+
 // app.use((err, req, res, next) => {
 //   console.log("🔥 MULTER ERROR:", err);
 //   res.status(500).json({ message: "Upload failed", error: err.message });
@@ -25,6 +31,31 @@ app.use("/api/houses",houseRoutes);
 
 connectDB();
 
-app.listen(3000, ()=>{
-    console.log("Listening to port 3000");
-})
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("🟢 Connected:", socket.id);
+
+  socket.on("joinChat", (chatId) => {
+    socket.join(chatId);
+  });
+
+  socket.on("sendMessage", (data) => {
+    io.to(data.chatId).emit("receiveMessage", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Disconnected");
+  });
+});
+
+server.listen(3000, () => {
+  console.log("🚀 Server running on port 3000");
+});

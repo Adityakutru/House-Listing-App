@@ -13,7 +13,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import PrivateRoute from "./components/PrivateRoute";
-import Ads from './pages/Adds';
+import Ads from './pages/Ads';
+import EditHouse from './pages/EditHouse';
+import ChatList from './pages/ChatList';
+import Chat from './pages/Chat';
 
 const App = () => {
   return (
@@ -41,8 +44,10 @@ const App = () => {
         <Route element={<PrivateRoute />}>
           <Route path="/add-house" element={<AddHouse />} />
           <Route path="/my-listings" element={<MyListings />} />
+          <Route path="/edit-house/:id" element={<EditHouse />} />
           <Route path="/ads" element={<Ads />} /> 
-          <Route path="/owner-dashboard" element={<OwnerDashboard />} /> 
+          <Route path="/chat" element={<ChatList />} />
+<Route path="/chat/:chatId" element={<Chat />} />
         </Route>
       </Routes>
     </>

@@ -8,13 +8,16 @@ export default function AddHouse() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    price: "",
-    location: "",
-    ownerName: "",
-    ownerPhone: "",
-  });
+  title: "",
+  description: "",
+  price: "",
+  area: "",
+  city: "",
+  state: "",
+  ownerName: "",
+  ownerPhone: "",
+});
+
 
   const [files, setFiles] = useState([]);
   const [mapLocation, setMapLocation] = useState({ lat: null, lng: null });
@@ -25,6 +28,16 @@ export default function AddHouse() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleAutoFillAddress = (address) => {
+  setFormData((prev) => ({
+    ...prev,
+    area: prev.area || address.area || "",
+    city: prev.city || address.city || "",
+    state: prev.state || address.state || "",
+  }));
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +58,11 @@ export default function AddHouse() {
     // append map coordinates
     data.append("latitude", mapLocation.lat);
     data.append("longitude", mapLocation.lng);
+    data.append(
+  "location",
+  `${formData.area}, ${formData.city}, ${formData.state}`
+);
+
 
     // append images
     for (let i = 0; i < files.length; i++) {
@@ -101,13 +119,32 @@ export default function AddHouse() {
         />
 
         {/* LOCATION TEXT */}
-        <input
-          name="location"
-          placeholder="Area / City"
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-          required
-        />
+        <div className="grid grid-cols-1 gap-3">
+  <input
+    name="area"
+    placeholder="Area / Locality"
+    value={formData.area}
+    onChange={handleChange}
+    className="w-full border px-3 py-2 rounded"
+  />
+
+  <input
+    name="city"
+    placeholder="City"
+    value={formData.city}
+    onChange={handleChange}
+    className="w-full border px-3 py-2 rounded"
+  />
+
+  <input
+    name="state"
+    placeholder="State"
+    value={formData.state}
+    onChange={handleChange}
+    className="w-full border px-3 py-2 rounded"
+  />
+</div>
+
 
         {/* OWNER DETAILS */}
         <div className="grid grid-cols-2 gap-4">
@@ -141,7 +178,11 @@ export default function AddHouse() {
         {/* MAP PICKER */}
         <div>
           <p className="font-medium mb-2">Pin Exact Location on Map</p>
-          <LocationPicker setLocation={setMapLocation} />
+          <LocationPicker
+  setLocation={setMapLocation}
+  location={mapLocation}
+  onAddressFound={handleAutoFillAddress}
+/>
 
           {mapLocation.lat && (
             <p className="text-sm text-gray-600 mt-2">
