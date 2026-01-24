@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../api/axios";
+import { getSocket } from "../socket"; // ← make sure this returns your socket instance
 
 export default function Navbar() {
   const location = useLocation();
@@ -10,8 +12,39 @@ export default function Navbar() {
     ? JSON.parse(localStorage.getItem("user"))
     : null;
 
+  const [unreadCount, setUnreadCount] = useState(0);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchUnread = async () => {
+      try {
+        const res = await api.get("/chat/unread/count");
+        setUnreadCount(res.data.unreadCount);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    // fetch count initially
+    fetchUnread();
+
+    const socket = getSocket();
+
+    // listen for server events
+    socket.on("unreadCountUpdated", ({ userId, count }) => {
+      // only update for this user
+      if (user?.id === userId) {
+        setUnreadCount(count);
+      }
+    });
+
+    return () => {
+      socket.off("unreadCountUpdated");
+    };
+  }, [token, user]);
 
   return (
     <>
@@ -77,15 +110,18 @@ export default function Navbar() {
                         My Listings
                       </button>
 
-                      <button
-                        onClick={() => {
-                          setOpenProfile(false);
-                          navigate("/chat");
-                        }}
-                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      <Link
+                        to="/chat"
+                        onClick={() => setOpenProfile(false)}
+                        className="relative block w-full text-left px-4 py-2 hover:bg-gray-100"
                       >
                         Chat
-                      </button>
+                        {unreadCount > 0 && (
+                          <span className="absolute top-2 right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </Link>
 
                       <hr />
 
@@ -119,7 +155,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* LOGOUT CONFIRM MODAL (UNCHANGED) */}
+      {/* LOGOUT CONFIRM MODAL */}
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">

@@ -47,9 +47,26 @@ io.on("connection", (socket) => {
     socket.join(chatId);
   });
 
-  socket.on("sendMessage", (data) => {
-    io.to(data.chatId).emit("receiveMessage", data);
+  socket.on("sendMessage", async (data) => {
+  io.to(data.chatId).emit("receiveMessage", data);
+
+  // After sending message, emit global unread count update
+  const userId = data.sender; // sender
+  const otherUserId = data.receiver; // you’ll need to include this
+
+  // Calculate unread count for the other user:
+  const count = await Message.countDocuments({
+    isRead: false,
+    sender: { $ne: otherUserId },
+    chat: {
+      $in: await Chat.find({
+        $or: [{ buyer: otherUserId }, { seller: otherUserId }],
+      }).distinct("_id"),
+    },
   });
+
+  io.emit("unreadCountUpdated", { userId: otherUserId, count });
+});
 
   socket.on("disconnect", () => {
     console.log("🔴 Disconnected");

@@ -64,6 +64,19 @@ export const getBuyerChats = async (req, res) => {
       .populate("buyer", "name")
       .sort("-updatedAt");
 
+      const chatsWithUnread = await Promise.all(
+  chats.map(async (c) => {
+    const unread = await Message.countDocuments({
+      chat: c._id,
+      isRead: false,
+      sender: { $ne: req.user.id },
+    });
+    return { ...c.toObject(), unreadCount: unread };
+  })
+);
+
+res.json(chatsWithUnread);
+
     // 🔐 remove chats whose house was deleted
     const safeChats = chats.filter(c => c.house !== null);
 
@@ -82,6 +95,19 @@ export const getSellerChats = async (req, res) => {
       .populate("seller", "name")
       .sort("-updatedAt");
 
+      const chatsWithUnread = await Promise.all(
+  chats.map(async (c) => {
+    const unread = await Message.countDocuments({
+      chat: c._id,
+      isRead: false,
+      sender: { $ne: req.user.id },
+    });
+    return { ...c.toObject(), unreadCount: unread };
+  })
+);
+
+res.json(chatsWithUnread);
+
     const safeChats = chats.filter(c => c.house !== null);
 
     res.json(safeChats);
@@ -93,12 +119,22 @@ export const getSellerChats = async (req, res) => {
 
 // Get messages for a chat
 export const getMessages = async (req, res) => {
-  const messages = await Message.find({ chat: req.params.chatId })
+  const { chatId } = req.params;
+  const userId = req.user.id;
+
+  // Mark all messages in this chat as read for the current user:
+  await Message.updateMany(
+    { chat: chatId, sender: { $ne: userId } },
+    { $set: { isRead: true } }
+  );
+
+  const messages = await Message.find({ chat: chatId })
     .populate("sender", "name")
     .sort("createdAt");
 
   res.json(messages);
 };
+
 
 // Send message (REST fallback, Socket will also use this)
 export const sendMessage = async (req, res) => {
@@ -155,3 +191,24 @@ export const getChatMeta = async (req, res) => {
   }
 };
 
+export const getUnreadCount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Count unread messages where current user is the recipient
+    const count = await Message.countDocuments({
+      isRead: false,
+      sender: { $ne: userId },
+      chat: {
+        $in: await Chat.find({
+          $or: [{ buyer: userId }, { seller: userId }],
+        }).distinct("_id"),
+      },
+    });
+
+    res.json({ unreadCount: count });
+  } catch (err) {
+    console.error("Error getting unread count", err);
+    res.status(500).json({ message: "Failed to get unread count" });
+  }
+};

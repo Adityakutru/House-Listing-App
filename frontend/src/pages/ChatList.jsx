@@ -80,9 +80,15 @@ if (buyerId === user.id) {
             onClick={() => navigate(`/chat/${chat._id}`)}
             className="p-4 bg-white shadow rounded-lg cursor-pointer hover:bg-gray-50"
           >
-            <p className="font-semibold">
-              {otherUser?.name || "User"}
-            </p>
+            <div className="flex items-center gap-2">
+  <p className="font-semibold">{otherUser?.name || "User"}</p>
+  {chat.unreadCount > 0 && (
+    <span className="bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+      {chat.unreadCount}
+    </span>
+  )}
+</div>
+
             <p className="text-sm text-gray-500">
               {chat.house?.title || "Property removed"}
             </p>

@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 
 const auth = (req, res, next) => {
-  console.log("🔥 Auth middleware received request");
-  console.log("🔥 Authorization header:", req.header("Authorization"));
+  // console.log("🔥 Auth middleware received request");
+  // console.log("🔥 Authorization header:", req.header("Authorization"));
 
   const authHeader = req.header("Authorization");
 
