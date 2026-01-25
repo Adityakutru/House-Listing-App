@@ -70,52 +70,99 @@ const HouseDetails = () => {
         ₹ {formatPrice(house.price)}
       </p>
 
+      {/* ————— Details Grid ————— */}
+      <div className="border-2 shadow-gray-950 border-gray-200 rounded-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm text-gray-800">
+        <div className="flex justify-between">
+          <span className="font-semibold">Listing Type:</span>
+          <span>{house.listingType || "-"}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Rooms (BHK):</span>
+          <span>{house.bhk ?? "-"}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Bathrooms:</span>
+          <span>{house.bathrooms ?? "-"}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Furnishing:</span>
+          <span>{house.furnishing || "-"}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Listed By:</span>
+          <span>{house.listedBy || "-"}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Parking:</span>
+          <span>{house.parking ?? "-"}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Facing:</span>
+          <span>{house.facing || "-"}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="font-semibold">Total Floors:</span>
+          <span>{house.totalFloors ?? "-"}</span>
+        </div>
+      </div>
+      </div>
       {/* DESCRIPTION */}
+      <p className="text-gray-700 font-semibold mt-6">Description:</p>
+      <div className="border-2 shadow-gray-950 border-gray-200 rounded-sm">
       <p className="text-gray-700 mb-6">{house.description}</p>
-
+      </div>
       {/* OWNER DETAILS */}
-      <div className="mb-6 space-y-2">
-  <p className="font-semibold">Owner: {house.ownerName}</p>
-  <p className="text-gray-700">Phone: {house.ownerPhone}</p>
+      <div className="mb-6 mt-6 space-y-2">
+        <p className="font-semibold">Owner: {house.ownerName}</p>
+        <p className="text-gray-700">Phone: {house.ownerPhone}</p>
 
-  {/* CHAT BUTTON */}
-  {user && user.id !== house.owner && (
-    <button
-      onClick={async () => {
-        try {
-          const res = await api.post(
-  "/chat/start",
-  { houseId: house._id },
-  {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  }
-);
+        {/* CHAT BUTTON */}
+        {user && user.id !== house.owner && (
+          <button
+            onClick={async () => {
+              try {
+                const res = await api.post(
+                  "/chat/start",
+                  { houseId: house._id },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem(
+                        "token"
+                      )}`,
+                    },
+                  }
+                );
 
-          navigate(`/chat/${res.data._id}`);
-        } catch (err) {
-          alert("Unable to start chat");
-        }
-      }}
-      className="mt-3 inline-block px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-    >
-      💬 Chat with Owner
-    </button>
-  )}
+                navigate(`/chat/${res.data._id}`);
+              } catch (err) {
+                alert("Unable to start chat");
+              }
+            }}
+            className="mt-3 inline-block px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            💬 Chat with Owner
+          </button>
+        )}
 
-  {!user && (
-    <p className="text-sm text-gray-500 mt-2">
-      Please login to chat with the owner.
-    </p>
-  )}
-</div>
-
+        {!user && (
+          <p className="text-sm text-gray-500 mt-2">
+            Please login to chat with the owner.
+          </p>
+        )}
+      </div>
 
       {/* MAP SECTION */}
-{house.latitude && house.longitude && (
+      {house.latitude && house.longitude && (
   <div className="mt-8">
-    <h2 className="text-lg font-semibold mb-3">📍 Property Location</h2>
+    <h2 className="text-lg font-semibold mb-3"> Property Location</h2>
 
     <MapContainer
       center={[house.latitude, house.longitude]}
@@ -129,6 +176,16 @@ const HouseDetails = () => {
       />
       <Marker position={[house.latitude, house.longitude]} />
     </MapContainer>
+
+    {/* 📍 View on Google Maps Button */}
+    <a
+      href={`https://www.google.com/maps?q=${house.latitude},${house.longitude}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-3 inline-block px-5 py-2 bg-gray-400 text-white rounded-lg hover:bg-blue-700 transition"
+    >
+      📍 View on Google Maps
+    </a>
   </div>
 )}
 

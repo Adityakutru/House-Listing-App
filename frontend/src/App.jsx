@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import MyListings from "./pages/MyListings";
+import Profile from "./pages/Profile";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from "react-toastify";
@@ -47,7 +48,8 @@ const App = () => {
           <Route path="/edit-house/:id" element={<EditHouse />} />
           <Route path="/ads" element={<Ads />} /> 
           <Route path="/chat" element={<ChatList />} />
-<Route path="/chat/:chatId" element={<Chat />} />
+          <Route path="/chat/:chatId" element={<Chat />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
     </>

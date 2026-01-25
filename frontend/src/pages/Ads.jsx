@@ -18,6 +18,11 @@ export default function Ads() {
     location: "",
     minPrice: "",
     maxPrice: "",
+    listingType: "",
+  bhk: "",
+  bathrooms: "",
+  furnishing: "",
+  listedBy: "",
   });
 
   // Fetch houses
@@ -47,25 +52,67 @@ export default function Ads() {
   };
 
   // Filter logic
-  const applyFilters = () => {
-    let list = houses;
+  // Filter logic
+const applyFilters = () => {
+  let list = houses;
 
-    if (filters.location) {
-      list = list.filter((h) =>
-        h.location.toLowerCase().includes(filters.location.toLowerCase())
-      );
-    }
+  if (filters.location) {
+    list = list.filter((h) =>
+      h.location.toLowerCase().includes(filters.location.toLowerCase())
+    );
+  }
 
-    if (filters.minPrice) {
-      list = list.filter((h) => h.price >= Number(filters.minPrice));
-    }
+  if (filters.minPrice) {
+    list = list.filter((h) => h.price >= Number(filters.minPrice));
+  }
 
-    if (filters.maxPrice) {
-      list = list.filter((h) => h.price <= Number(filters.maxPrice));
-    }
+  if (filters.maxPrice) {
+    list = list.filter((h) => h.price <= Number(filters.maxPrice));
+  }
 
-    setFiltered(list);
-  };
+  if (filters.listingType) {
+    list = list.filter((h) => h.listingType === filters.listingType);
+  }
+
+  if (filters.bhk) {
+    list = list.filter((h) => h.bhk === filters.bhk);
+  }
+
+  if (filters.bathrooms) {
+    list = list.filter((h) => h.bathrooms === filters.bathrooms);
+  }
+
+  if (filters.furnishing) {
+    list = list.filter((h) => h.furnishing === filters.furnishing);
+  }
+
+  if (filters.listedBy) {
+    list = list.filter((h) => h.listedBy === filters.listedBy);
+  }
+
+  setFiltered(list);
+};
+
+{/* CLEAR FILTERS */}
+<button
+  onClick={() => {
+    setFilters({
+      location: "",
+      minPrice: "",
+      maxPrice: "",
+      listingType: "",
+      bhk: "",
+      bathrooms: "",
+      furnishing: "",
+      listedBy: "",
+    });
+    setFiltered(houses); // reset to all
+  }}
+  className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-100"
+>
+  Clear Filters
+</button>
+
 
   // carousel navigation
   const nextImage = (id, total) => {
@@ -85,48 +132,157 @@ export default function Ads() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 px-4 flex gap-10">
-      
+    <div className="max-w-6xl mx-auto mt-10 px-4 flex gap-8">
+
       {/* LEFT FILTER PANEL */}
-      <div className="w-64 bg-white shadow-md rounded-xl p-5 h-fit">
-        <h2 className="text-lg font-semibold mb-4">Filters</h2>
+      {/* LEFT FILTER PANEL */}
+<div className="bg-white p-4 rounded shadow space-y-4 w-64 min-w-[16rem]">
 
-        <label className="block text-sm font-medium">Location</label>
-        <input
-          className="border w-full px-3 py-2 rounded mb-3"
-          placeholder="Search location"
-          onChange={(e) =>
-            setFilters({ ...filters, location: e.target.value })
-          }
-        />
+  <h2 className="font-semibold text-lg">Filters</h2>
 
-        <label className="block text-sm font-medium">Price Range</label>
-        <div className="flex gap-3">
-          <input
-            type="number"
-            placeholder="Min"
-            className="border w-full px-2 py-2 rounded"
-            onChange={(e) =>
-              setFilters({ ...filters, minPrice: e.target.value })
-            }
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            className="border w-full px-2 py-2 rounded"
-            onChange={(e) =>
-              setFilters({ ...filters, maxPrice: e.target.value })
-            }
-          />
-        </div>
+  {/* LOCATION TEXT */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Location</label>
+    <input
+      type="text"
+      placeholder="Search location"
+      value={filters.location}
+      onChange={(e) =>
+        setFilters({ ...filters, location: e.target.value })
+      }
+      className="w-full border px-3 py-2 rounded"
+    />
+  </div>
 
+  {/* PRICE RANGE */}
+  <div className="grid grid-cols-2 gap-2">
+    <input
+      type="number"
+      placeholder="Min"
+      value={filters.minPrice}
+      onChange={(e) =>
+        setFilters({ ...filters, minPrice: e.target.value })
+      }
+      className="w-full border px-3 py-2 rounded"
+    />
+    <input
+      type="number"
+      placeholder="Max"
+      value={filters.maxPrice}
+      onChange={(e) =>
+        setFilters({ ...filters, maxPrice: e.target.value })
+      }
+      className="w-full border px-3 py-2 rounded"
+    />
+  </div>
+
+  {/* LISTING TYPE */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Listing Type</label>
+    <select
+      value={filters.listingType}
+      onChange={(e) =>
+        setFilters({ ...filters, listingType: e.target.value })
+      }
+      className="w-full border px-3 py-2 rounded"
+    >
+      <option value="">Any</option>
+      <option value="For Sale">For Sale</option>
+      <option value="For Rent">For Rent</option>
+    </select>
+  </div>
+
+  {/* BHK */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Rooms (BHK)</label>
+    <div className="flex gap-2 flex-wrap">
+      {[1, 2, 3, 4, 5].map((n) => (
         <button
-          onClick={applyFilters}
-          className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          key={n}
+          type="button"
+          onClick={() =>
+            setFilters({ ...filters, bhk: filters.bhk === n ? "" : n })
+          }
+          className={`px-3 py-1 border rounded ${
+            filters.bhk === n ? "bg-blue-600 text-white" : ""
+          }`}
         >
-          Apply Filters
+          {n} BHK
         </button>
-      </div>
+      ))}
+    </div>
+  </div>
+
+  {/* BATHROOMS */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Bathrooms</label>
+    <div className="flex gap-2 flex-wrap">
+      {[1, 2, 3, 4].map((n) => (
+        <button
+          key={n}
+          type="button"
+          onClick={() =>
+            setFilters({ ...filters, bathrooms: filters.bathrooms === n ? "" : n })
+          }
+          className={`px-3 py-1 border rounded ${
+            filters.bathrooms === n ? "bg-blue-600 text-white" : ""
+          }`}
+        >
+          {n}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  {/* FURNISHING */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Furnishing</label>
+    <div className="flex gap-2 flex-wrap">
+      {["Furnished","Semi-Furnished","Unfurnished"].map(opt => (
+        <button
+          key={opt}
+          onClick={() =>
+            setFilters({ ...filters, furnishing: filters.furnishing === opt ? "" : opt })
+          }
+          className={`px-3 py-1 border rounded ${
+            filters.furnishing === opt ? "bg-blue-600 text-white" : ""
+          }`}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  {/* LISTED BY */}
+  <div>
+    <label className="block text-sm font-medium mb-1">Listed By</label>
+    <div className="flex gap-2 flex-wrap">
+      {["Builder","Dealer","Owner"].map(opt => (
+        <button
+          key={opt}
+          onClick={() =>
+            setFilters({ ...filters, listedBy: filters.listedBy === opt ? "" : opt })
+          }
+          className={`px-3 py-1 border rounded ${
+            filters.listedBy === opt ? "bg-blue-600 text-white" : ""
+          }`}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  {/* APPLY FILTERS */}
+  <button
+    onClick={applyFilters}
+    className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+  >
+    Apply Filters
+  </button>
+</div>
+
 
       {/* RIGHT LISTINGS */}
       <div className="flex-1">

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
 import HouseCard from "../components/HouseCard";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [houses, setHouses] = useState([]);
   const [filtered, setFiltered] = useState([]);
-
+  const navigate = useNavigate()
   const [filters, setFilters] = useState({
     search: "",
     location: "",
@@ -52,7 +53,7 @@ const Home = () => {
     <div>
       {/* HERO SECTION */}
       <div
-        className="h-72 bg-cover bg-center flex flex-col justify-center items-center text-white"
+        className="h-100 bg-cover bg-center flex flex-col justify-center items-center text-white"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1501183638710-841dd1904471?auto=format&fit=crop&w=1350&q=80')",
@@ -115,21 +116,82 @@ const Home = () => {
       </div>
 
       {/* LISTINGS GRID */}
-      <div className="max-w-6xl mx-auto mt-8 p-4">
-        <h1 className="text-3xl font-bold mb-6">Available Properties</h1>
+      
+<div className="max-w-6xl mx-auto mt-8 p-4">
+  <h1 className="text-3xl font-bold mb-6">Available Properties</h1>
 
-        {filtered.length === 0 ? (
-          <p className="text-gray-600 text-center mt-10">
-            No properties match your search or filters.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((house) => (
-              <HouseCard key={house._id} house={house} />
-            ))}
-          </div>
-        )}
+  {filtered.length === 0 ? (
+    <p className="text-gray-600 text-center mt-10">
+      No properties match your search or filters.
+    </p>
+  ) : (
+
+    <>
+      {/* Show first 3 ads */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filtered.slice(0, 6).map((house) => (
+          <HouseCard key={house._id} house={house} />
+        ))}
       </div>
+
+      {/* Only show fade + Explore More if more than 3 */}
+      {filtered.length > 3 && (
+        <div className="mt-8 flex flex-col items-center">
+
+          {/* Fade overlay (height ~50px) */}
+          
+
+          {/* “+X more properties” label */}
+
+          {/* Explore More Button */}
+          <button
+            onClick={() => navigate("/ads")}
+            className="px-6 py-2 text-black rounded-lg hover:text-gray-500"
+          >
+            Explore More...
+          </button>  
+        </div>
+      )}
+    </>
+  )}
+</div>
+<div className="w-full h-16 bg-gradient-to-t from-gray-400 to-transparent -mt-8 pointer-events-none"></div>
+{/* CONTACT US SECTION */}
+<div className="max-w-full mx-auto p-8 bg-gray-700 text-white shadow-md text-center">
+  <h2 className="text-3xl font-bold mb-4">📩 Contact Us</h2>
+  <p className="text-gray-200 mb-6">
+    Have questions or need help finding a listing? We're here for you!
+  </p>
+
+  <div className="flex flex-col sm:flex-row sm:justify-center gap-6 text-gray-100">
+    <div className="flex items-center gap-2">
+      <span className="font-semibold">📞 Phone:</span>
+      <a href="tel:+1234567890" className="text-blue-400 hover:underline">
+        +91 8249991601
+      </a>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span className="font-semibold">📧 Email:</span>
+      <a
+        href="mailto:support@housefinder.com"
+        className="text-blue-400 hover:underline"
+      >
+        support@housefinder.com
+      </a>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span className="font-semibold">📍 Address:</span>
+      <span>ITER, Jagmohan nagar, Bhubaneswar</span>
+    </div>
+  </div>
+
+  <p className="mt-4 text-sm text-gray-300">
+    We typically respond within 24 hours.
+  </p>
+</div>
+
     </div>
   );
 };

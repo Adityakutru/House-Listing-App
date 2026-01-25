@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import { getSocket } from "../socket"; // ← make sure this returns your socket instance
+import { getSocket } from "../socket";
 
 export default function Navbar() {
   const location = useLocation();
@@ -100,6 +100,23 @@ export default function Navbar() {
 
                   {openProfile && (
                     <div className="absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg z-50">
+
+                      {/* ================= */}
+                      {/* ⭕ PROFILE LINK */}
+                      {/* ================= */}
+                      <button
+                        onClick={() => {
+                          setOpenProfile(false);
+                          navigate("/profile");
+                        }}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Profile
+                      </button>
+
+                      {/* ================= */}
+                      {/* My Listings */}
+                      {/* ================= */}
                       <button
                         onClick={() => {
                           setOpenProfile(false);
@@ -110,6 +127,9 @@ export default function Navbar() {
                         My Listings
                       </button>
 
+                      {/* ================= */}
+                      {/* Chat with badge */}
+                      {/* ================= */}
                       <Link
                         to="/chat"
                         onClick={() => setOpenProfile(false)}
@@ -125,6 +145,9 @@ export default function Navbar() {
 
                       <hr />
 
+                      {/* ================= */}
+                      {/* Logout */}
+                      {/* ================= */}
                       <button
                         onClick={() => {
                           setOpenProfile(false);
@@ -134,6 +157,7 @@ export default function Navbar() {
                       >
                         Logout
                       </button>
+
                     </div>
                   )}
                 </div>

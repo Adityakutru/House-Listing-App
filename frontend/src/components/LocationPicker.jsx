@@ -30,10 +30,12 @@ function ClickHandler({ setLocation, onAddressFound }) {
 
     const extractedAddress = {
       area:
-        address.suburb ||
-        address.neighbourhood ||
-        address.village ||
-        "",
+        address.road ||
+      address.neighborhood ||
+      address.suburb ||
+      address.village ||
+      address.county ||
+      "",
       city:
         address.city ||
         address.town ||

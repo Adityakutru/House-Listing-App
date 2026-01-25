@@ -9,6 +9,14 @@ export const addHouse = async (req, res) => {
       title,
       description,
       price,
+       listingType,
+      bhk,
+      bathrooms,
+      furnishing,
+      listedBy,
+      parking,
+      facing,
+      totalFloors,
       area,
       city,
       state,
@@ -39,6 +47,14 @@ export const addHouse = async (req, res) => {
       title,
       description,
       price,
+      listingType,
+      bhk: Number(bhk),
+      bathrooms: Number(bathrooms),
+      furnishing,
+      listedBy,
+      parking: Number(parking),
+      facing,
+      totalFloors: Number(totalFloors),
       location,
       ownerName,
       ownerPhone,
@@ -135,20 +151,33 @@ export const updateHouse = async (req, res) => {
   try {
     const house = await House.findById(req.params.id);
 
-    if (!house) {
-      return res.status(404).json({ message: "House not found" });
-    }
-
-    if (house.owner.toString() !== req.user.id) {
+    if (!house) return res.status(404).json({ message: "House not found" });
+    if (house.owner.toString() !== req.user.id)
       return res.status(403).json({ message: "Not authorized" });
-    }
 
-    Object.assign(house, req.body);
-    await house.save();
+    const updateData = {
+      ...req.body,
+      price: req.body.price ? Number(req.body.price) : house.price,
+      bhk: req.body.bhk ? Number(req.body.bhk) : house.bhk,
+      bathrooms: req.body.bathrooms
+        ? Number(req.body.bathrooms)
+        : house.bathrooms,
+      parking: req.body.parking ? Number(req.body.parking) : house.parking,
+      totalFloors: req.body.totalFloors
+        ? Number(req.body.totalFloors)
+        : house.totalFloors,
+    };
 
-    res.json({ message: "House updated successfully", house });
-  } catch (error) {
-    res.status(500).json({ message: "Update failed", error: error.message });
+    const updated = await House.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Update failed" });
   }
 };
+
 
