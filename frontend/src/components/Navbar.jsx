@@ -46,10 +46,14 @@ export default function Navbar() {
     };
   }, [token, user]);
 
+  // console.log("Current user (navbar):", user.role);
+
   return (
     <>
       <nav className="bg-white shadow-sm py-4 px-6 mb-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
+
+          
 
           {/* LOGO */}
           <Link to="/" className="text-2xl font-bold text-blue-600">
@@ -59,9 +63,15 @@ export default function Navbar() {
           {/* RIGHT SECTION */}
           <div className="flex items-center gap-6">
 
+
             <Link to="/" className="hover:text-blue-600">
               Home
             </Link>
+
+            {/* Admins only */}
+          {user?.role === "admin" && (
+          <Link to="/admin" className="hover:text-blue-600">Admin Panel</Link>
+          )}
 
             <Link
               to="/ads"

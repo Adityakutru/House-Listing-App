@@ -18,6 +18,8 @@ import Ads from './pages/Ads';
 import EditHouse from './pages/EditHouse';
 import ChatList from './pages/ChatList';
 import Chat from './pages/Chat';
+import AdminRoute from './components/AdminRoute';
+import AdminDashboard from './pages/AdminDashboard';
 
 const App = () => {
   return (
@@ -51,6 +53,10 @@ const App = () => {
           <Route path="/chat/:chatId" element={<Chat />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
+        <Route element={<AdminRoute />}>
+  <Route path="/admin" element={<AdminDashboard />} />
+</Route>
+
       </Routes>
     </>
   );

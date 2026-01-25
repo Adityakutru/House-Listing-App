@@ -23,7 +23,8 @@ export const registerUser = async(req, res)=>{
 
         res.status(201).json({
             message: "User register successfully",
-            user: {id: user._id, name: user.name, email:user.email},
+            user: {id: user._id, name: user.name, email:user.email,profilePic: user.profilePic,
+    role: user.role,},
         });
     } catch (error) {
         res.status(500).json({message:"Register failed", error: error.message});
@@ -52,7 +53,8 @@ export const loginUser = async(req, res) => {
         res.status(200).json({
             message: "Login success",
             token,
-            user:{id:user._id, name: user.name, email: user.email}, 
+            user:{id:user._id, name: user.name, email: user.email, profilePic: user.profilePic,
+    role: user.role,}, 
         });
     } catch (error) {
         res.status(500).json({message: "Login error", error: error.message});

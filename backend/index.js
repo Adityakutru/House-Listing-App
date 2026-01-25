@@ -6,6 +6,7 @@ import cors from 'cors'
 import authRoutes from "./Routes/authRoutes.js"
 import chatRoutes from "./Routes/chatRoutes.js";
 import userRoutes from "./Routes/userRoutes.js";
+import adminRoutes from "./Routes/adminRoutes.js";
 import http from "http";
 import { Server } from "socket.io";
 
@@ -23,6 +24,8 @@ app.use("/api/houses",houseRoutes);
 app.use("/api/chat", chatRoutes);
 
 app.use("/api/auth", userRoutes);
+
+app.use("/api/admin", adminRoutes);
 
 // app.use((err, req, res, next) => {
 //   console.log("🔥 MULTER ERROR:", err);

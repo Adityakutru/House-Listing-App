@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 
 const auth = (req, res, next) => {
-  // console.log("🔥 Auth middleware received request");
-  // console.log("🔥 Authorization header:", req.header("Authorization"));
 
   const authHeader = req.header("Authorization");
 
@@ -19,7 +17,7 @@ const auth = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = { id: decoded.id };  // ✅ FIXED
+    req.user = { id: decoded.id };  
 
     next();
   } catch (err) {

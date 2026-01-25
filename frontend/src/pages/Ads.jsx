@@ -427,7 +427,7 @@ const applyFilters = () => {
         });
         navigate(`/chat/${res.data._id}`);
       } catch (err) {
-        alert("Please login to chat with owner");
+        alert("Please login to chat with owner", err);
       }
     }}
     className="mt-3 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
